@@ -1,0 +1,4 @@
+node_modules/
+.env
+shopmart.db
+shopmart.db-*

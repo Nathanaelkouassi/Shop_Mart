@@ -1,0 +1,59 @@
+/* Shared ShopMart styles */
+:root {
+    --shopmart-primary: #667eea;
+    --shopmart-secondary: #764ba2;
+    --shopmart-text: #1f2937;
+    --shopmart-muted: #6b7280;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    color: var(--shopmart-text);
+}
+
+a {
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.navbar,
+nav {
+    backdrop-filter: blur(10px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--shopmart-primary), var(--shopmart-secondary));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.product-card,
+.category-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.product-card:hover,
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(31, 41, 55, 0.12);
+}
+
+.product-image {
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+@media (max-width: 767px) {
+    nav .hidden {
+        display: none;
+    }
+}

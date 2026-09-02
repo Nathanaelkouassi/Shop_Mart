@@ -1,0 +1,5 @@
+backend/node_modules/
+backend/.env
+backend/shopmart.db
+backend/shopmart.db-*
+.DS_Store

@@ -1,0 +1,1945 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace en Ligne</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .product-image {
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        .hero-slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .category-card {
+            transition: all 0.3s ease;
+        }
+        .category-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .navbar {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        .flash-sale {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        .cart-count {
+            animation: bounce 0.5s ease;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="navbar fixed top-0 w-full z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-purple-600">🛒 ShopMart</h1>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html#hero" class="text-purple-600 font-semibold transition-colors">Accueil</a>
+                    <a href="categories.html" class="text-gray-700 hover:text-purple-600 transition-colors">Catégories</a>
+                    <a href="produits.html" class="text-gray-700 hover:text-purple-600 transition-colors">Produits</a>
+                    <a href="contact.html" class="text-gray-700 hover:text-purple-600 transition-colors">Contact</a>
+                    <a href="dashboard.html" class="rounded-lg bg-gray-800 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-purple-700">Espace propriétaire</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="Rechercher des produits..." 
+                               class="w-64 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                               onkeyup="searchProducts()" onkeypress="handleSearchEnter(event)" ondblclick="checkAdminAccess(event)">
+                        <button onclick="performSearch()" class="absolute right-3 top-2 text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <button onclick="toggleCart()" class="relative p-2 text-gray-700 hover:text-purple-600 transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="cart-count absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+                    <button id="user-account-button" onclick="toggleAuthModal()" class="text-gray-700 hover:text-purple-600 transition-colors" aria-label="Compte client">
+                        <i class="fas fa-user text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Carousel -->
+    <section id="hero" class="relative mt-16 h-96 overflow-hidden">
+        <div id="carousel" class="flex transition-transform duration-500 ease-in-out h-full">
+            <!-- Slide 1 -->
+            <div class="min-w-full h-full relative">
+                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=400&fit=crop" 
+                     alt="Shopping" class="w-full h-full object-cover"
+                     onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center\'><div class=\'text-center text-white\'><h2 class=\'text-5xl font-bold mb-4\'>🛍️ Shopping</h2><p class=\'text-xl\'>Découvrez nos offres exceptionnelles</p></div></div>';">
+                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <h2 class="text-5xl font-bold mb-4">Découvrez les Meilleures Offres</h2>
+                        <p class="text-xl mb-6">Des millions de produits à prix imbattables</p>
+                        <button class="btn-primary text-white px-8 py-3 rounded-full font-semibold text-lg">
+                            Commencer vos Achats
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2 -->
+            <div class="min-w-full h-full relative">
+                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=400&fit=crop" 
+                     alt="Electronics" class="w-full h-full object-cover"
+                     onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center\'><div class=\'text-center text-white\'><h2 class=\'text-5xl font-bold mb-4\'>📱 Électronique</h2><p class=\'text-xl\'>Dernières technologies à prix réduits</p></div></div>';">
+                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <h2 class="text-5xl font-bold mb-4">Électronique Dernière Génération</h2>
+                        <p class="text-xl mb-6">Smartphones, laptops et plus encore</p>
+                        <button class="btn-primary text-white px-8 py-3 rounded-full font-semibold text-lg">
+                            Voir les Produits
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3 -->
+            <div class="min-w-full h-full relative">
+                <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200&h=400&fit=crop" 
+                     alt="Fashion" class="w-full h-full object-cover"
+                     onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-r from-pink-600 to-red-600 flex items-center justify-center\'><div class=\'text-center text-white\'><h2 class=\'text-5xl font-bold mb-4\'>👗 Mode</h2><p class=\'text-xl\'>Tendances de la saison</p></div></div>';">
+                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <h2 class="text-5xl font-bold mb-4">Mode & Style</h2>
+                        <p class="text-xl mb-6">Les dernières tendances à prix doux</p>
+                        <button class="btn-primary text-white px-8 py-3 rounded-full font-semibold text-lg">
+                            Explorer la Mode
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation buttons -->
+        <button onclick="previousSlide()" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button onclick="nextSlide()" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        
+        <!-- Dots indicator -->
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            <button onclick="goToSlide(0)" class="carousel-dot w-3 h-3 rounded-full bg-white bg-opacity-50 hover:bg-opacity-75 transition-all"></button>
+            <button onclick="goToSlide(1)" class="carousel-dot w-3 h-3 rounded-full bg-white bg-opacity-50 hover:bg-opacity-75 transition-all"></button>
+            <button onclick="goToSlide(2)" class="carousel-dot w-3 h-3 rounded-full bg-white bg-opacity-50 hover:bg-opacity-75 transition-all"></button>
+        </div>
+    </section>
+
+    <!-- Flash Sale Banner -->
+    <div class="flash-sale bg-red-500 text-white py-3 text-center">
+        <p class="font-bold">⚡ VENTE FLASH - Jusqu'à 70% de réduction - Temps limité!</p>
+    </div>
+
+    <!-- Categories -->
+    <section id="categories" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12 text-gray-800">Catégories Populaires</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <div onclick="window.location.href='categories.html'" role="link" tabindex="0" class="category-card bg-gradient-to-br from-blue-100 to-blue-200 p-4 rounded-xl text-center cursor-pointer overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=200&h=120&fit=crop" 
+                         alt="Électronique" class="w-full h-20 object-cover rounded-lg mb-3"
+                         onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-20 bg-blue-200 rounded-lg mb-3 flex items-center justify-center text-3xl\'>📱</div><h4 class=\'font-semibold text-gray-800\'>Électronique</h4>';">
+                    <h4 class="font-semibold text-gray-800">Électronique</h4>
+                </div>
+                <div onclick="window.location.href='categories.html'" role="link" tabindex="0" class="category-card bg-gradient-to-br from-pink-100 to-pink-200 p-4 rounded-xl text-center cursor-pointer overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=200&h=120&fit=crop" 
+                         alt="Mode" class="w-full h-20 object-cover rounded-lg mb-3"
+                         onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-20 bg-pink-200 rounded-lg mb-3 flex items-center justify-center text-3xl\'>👗</div><h4 class=\'font-semibold text-gray-800\'>Mode</h4>';">
+                    <h4 class="font-semibold text-gray-800">Mode</h4>
+                </div>
+                <div onclick="window.location.href='categories.html'" role="link" tabindex="0" class="category-card bg-gradient-to-br from-green-100 to-green-200 p-4 rounded-xl text-center cursor-pointer overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&h=120&fit=crop" 
+                         alt="Maison" class="w-full h-20 object-cover rounded-lg mb-3"
+                         onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-20 bg-green-200 rounded-lg mb-3 flex items-center justify-center text-3xl\'>🏠</div><h4 class=\'font-semibold text-gray-800\'>Maison</h4>';">
+                    <h4 class="font-semibold text-gray-800">Maison</h4>
+                </div>
+                <div onclick="window.location.href='categories.html'" role="link" tabindex="0" class="category-card bg-gradient-to-br from-yellow-100 to-yellow-200 p-4 rounded-xl text-center cursor-pointer overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=120&fit=crop" 
+                         alt="Sports" class="w-full h-20 object-cover rounded-lg mb-3"
+                         onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-20 bg-yellow-200 rounded-lg mb-3 flex items-center justify-center text-3xl\'>⚽</div><h4 class=\'font-semibold text-gray-800\'>Sports</h4>';">
+                    <h4 class="font-semibold text-gray-800">Sports</h4>
+                </div>
+                <div onclick="window.location.href='categories.html'" role="link" tabindex="0" class="category-card bg-gradient-to-br from-purple-100 to-purple-200 p-4 rounded-xl text-center cursor-pointer overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=200&h=120&fit=crop" 
+                         alt="Beauté" class="w-full h-20 object-cover rounded-lg mb-3"
+                         onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-20 bg-purple-200 rounded-lg mb-3 flex items-center justify-center text-3xl\'>💄</div><h4 class=\'font-semibold text-gray-800\'>Beauté</h4>';">
+                    <h4 class="font-semibold text-gray-800">Beauté</h4>
+                </div>
+                <div onclick="window.location.href='categories.html'" role="link" tabindex="0" class="category-card bg-gradient-to-br from-orange-100 to-orange-200 p-4 rounded-xl text-center cursor-pointer overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=200&h=120&fit=crop" 
+                         alt="Gaming" class="w-full h-20 object-cover rounded-lg mb-3"
+                         onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-20 bg-orange-200 rounded-lg mb-3 flex items-center justify-center text-3xl\'>🎮</div><h4 class=\'font-semibold text-gray-800\'>Gaming</h4>';">
+                    <h4 class="font-semibold text-gray-800">Gaming</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products by Categories -->
+    <section id="products" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <!-- Category Filter -->
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-8 text-gray-800">Nos Produits</h3>
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button onclick="filterProducts('all')" class="filter-btn bg-purple-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-purple-700 transition-colors">
+                        Tous les Produits
+                    </button>
+                    <button onclick="filterProducts('Électronique')" class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition-colors">
+                        Électronique
+                    </button>
+                    <button onclick="filterProducts('Mode')" class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition-colors">
+                        Mode
+                    </button>
+                    <button onclick="filterProducts('Sports')" class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition-colors">
+                        Sports
+                    </button>
+                    <button onclick="filterProducts('Beauté')" class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition-colors">
+                        Beauté
+                    </button>
+                    <button onclick="filterProducts('Maison')" class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition-colors">
+                        Maison
+                    </button>
+                    <button onclick="filterProducts('Gaming')" class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition-colors">
+                        Gaming
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="products-grid">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+            
+            <!-- Load More Button -->
+            <div class="text-center mt-12">
+                <button id="load-more-btn" onclick="loadMoreProducts()" class="btn-primary text-white px-8 py-3 rounded-full font-semibold text-lg">
+                    Voir Plus de Produits
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12 text-gray-800">Contactez-Nous</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-2xl font-bold mb-6 text-gray-800">Nos Informations</h4>
+                    <div class="space-y-6">
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-map-marker-alt text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-800">Adresse</h5>
+                                <p class="text-gray-600">123 Rue du Commerce,Bingerville, Abidjan</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-phone text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-800">Téléphone</h5>
+                                <p class="text-gray-600">+225 01 01 08 63 54</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-envelope text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-800">Email</h5>
+                                <p class="text-gray-600">knathanael234@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-clock text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-800">Horaires</h5>
+                                <p class="text-gray-600">Lun-Ven: 9h-18h<br>Sam: 10h-16h</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Form -->
+                <div>
+                    <h4 class="text-2xl font-bold mb-6 text-gray-800">Envoyez-nous un Message</h4>
+                    <form class="space-y-6" onsubmit="submitContactForm(event)">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold mb-2 text-gray-700">Nom</label>
+                                <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-2 text-gray-700">Email</label>
+                                <input type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 text-gray-700">Sujet</label>
+                            <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 text-gray-700">Message</label>
+                            <textarea rows="5" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full btn-primary text-white py-3 rounded-lg font-semibold text-lg">
+                            Envoyer le Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-xl font-bold mb-4">🛒 ShopMart</h4>
+                    <p class="text-gray-300">Votre marketplace de confiance pour tous vos achats en ligne.</p>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Service Client</h5>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Centre d'aide</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Retours</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Livraison</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">À Propos</h5>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Notre Histoire</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Carrières</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Presse</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Suivez-nous</h5>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-2xl hover:text-blue-400 transition-colors"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-2xl hover:text-blue-400 transition-colors"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-2xl hover:text-pink-400 transition-colors"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 ShopMart. Tous droits réservés. <a href="dashboard.html" class="ml-2 text-gray-400 hover:text-white">Accès propriétaire</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold" id="modal-title">Détails du Produit</h3>
+                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                <div id="modal-content">
+                    <!-- Modal content will be dynamically loaded -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold">Mon Panier</h3>
+                    <button onclick="closeCart()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                <div id="cart-content">
+                    <!-- Cart content will be dynamically loaded -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Payment Modal -->
+    <div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-5">
+                    <h3 class="text-2xl font-bold">Paiement mobile</h3>
+                    <button onclick="closePayment()" class="text-gray-500 hover:text-gray-700 text-2xl" aria-label="Fermer">&times;</button>
+                </div>
+                <p class="text-gray-600 mb-4">Choisissez votre opérateur pour finaliser la commande.</p>
+                <form onsubmit="submitPayment(event)" class="space-y-4">
+                    <fieldset class="block"><legend class="block text-sm font-semibold mb-2">Opérateur</legend><div class="grid grid-cols-2 gap-3"><label class="cursor-pointer"><input class="peer sr-only" type="radio" name="payment-operator" value="Orange Money" checked required><span class="flex h-20 flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white p-2 text-center transition peer-checked:border-orange-500 peer-checked:bg-orange-50"><img src="https://cdn.simpleicons.org/orange/ff7900" alt="Logo Orange Money" class="mb-1 h-8 w-8" onerror="this.style.display='none'"><span class="text-xs font-semibold">Orange Money</span></span></label><label class="cursor-pointer"><input class="peer sr-only" type="radio" name="payment-operator" value="MTN Mobile Money" required><span class="flex h-20 flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white p-2 text-center transition peer-checked:border-yellow-500 peer-checked:bg-yellow-50"><img src="https://cdn.simpleicons.org/mtn/ffcc00" alt="Logo MTN Mobile Money" class="mb-1 h-8 w-8" onerror="this.style.display='none'"><span class="text-xs font-semibold">MTN Mobile Money</span></span></label><label class="cursor-pointer"><input class="peer sr-only" type="radio" name="payment-operator" value="Wave" required><span class="flex h-20 flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white p-2 text-center transition peer-checked:border-blue-500 peer-checked:bg-blue-50"><img src="https://cdn.simpleicons.org/wave/1da1f2" alt="Logo Wave" class="mb-1 h-8 w-8" onerror="this.style.display='none'"><span class="text-xs font-semibold">Wave</span></span></label><label class="cursor-pointer"><input class="peer sr-only" type="radio" name="payment-operator" value="Moov Money" required><span class="flex h-20 flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white p-2 text-center transition peer-checked:border-green-500 peer-checked:bg-green-50"><img src="https://cdn.simpleicons.org/moov/00a651" alt="Logo Moov Money" class="mb-1 h-8 w-8" onerror="this.style.display='none'"><span class="text-xs font-semibold">Moov Money</span></span></label></div></fieldset>
+                    <label class="block"><span class="block text-sm font-semibold mb-2">Numéro de paiement</span><input id="payment-number" required type="tel" value="0101086354" pattern="[0-9 ]{8,14}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></label>
+                    <div class="rounded-lg bg-purple-50 p-4"><div class="flex justify-between font-semibold"><span>Total à payer</span><span id="payment-total" class="text-purple-600"></span></div></div>
+                    <button type="submit" class="w-full btn-primary text-white py-3 rounded-lg font-semibold"><i class="fas fa-mobile-alt mr-2"></i>Confirmer le paiement</button>
+                </form>
+                <p class="mt-4 text-xs text-gray-500">Le paiement réel sera connecté au service de l'opérateur lors de l'intégration backend.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="fixed inset-0 bg-gray-100 z-50 hidden">
+        <div class="flex h-full">
+            <!-- Admin Sidebar -->
+            <div class="w-64 bg-gray-800 text-white">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold mb-6">🔧 Admin Panel</h2>
+                    <nav class="space-y-2">
+                        <button onclick="showAdminSection('dashboard')" class="admin-nav-btn w-full text-left px-4 py-2 rounded hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Tableau de Bord
+                        </button>
+                        <button onclick="showAdminSection('products')" class="admin-nav-btn w-full text-left px-4 py-2 rounded hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-box mr-2"></i>Gestion Produits
+                        </button>
+                        <button onclick="showAdminSection('orders')" class="admin-nav-btn w-full text-left px-4 py-2 rounded hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-shopping-cart mr-2"></i>Commandes
+                        </button>
+                        <button onclick="showAdminSection('users')" class="admin-nav-btn w-full text-left px-4 py-2 rounded hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-users mr-2"></i>Utilisateurs
+                        </button>
+                    </nav>
+                </div>
+                <div class="absolute bottom-6 left-6">
+                    <button onclick="logoutAdmin()" class="text-red-400 hover:text-red-300 transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Admin Content -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 id="admin-section-title" class="text-3xl font-bold text-gray-800">Tableau de Bord</h1>
+                        <div class="text-sm text-gray-600">
+                            Connecté en tant que: <span class="font-semibold">Admin</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Dashboard Section -->
+                    <div id="admin-dashboard" class="admin-section">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-white p-6 rounded-lg shadow">
+                                <div class="flex items-center">
+                                    <div class="bg-blue-100 p-3 rounded-full">
+                                        <i class="fas fa-box text-blue-600 text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-gray-600">Total Produits</p>
+                                        <p class="text-2xl font-bold" id="total-products">30</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow">
+                                <div class="flex items-center">
+                                    <div class="bg-green-100 p-3 rounded-full">
+                                        <i class="fas fa-shopping-cart text-green-600 text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-gray-600">Commandes</p>
+                                        <p class="text-2xl font-bold">156</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow">
+                                <div class="flex items-center">
+                                    <div class="bg-purple-100 p-3 rounded-full">
+                                        <i class="fas fa-euro-sign text-purple-600 text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-gray-600">Revenus</p>
+                                        <p class="text-2xl font-bold">12 450 FCFA</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow">
+                                <div class="flex items-center">
+                                    <div class="bg-orange-100 p-3 rounded-full">
+                                        <i class="fas fa-users text-orange-600 text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-gray-600">Utilisateurs</p>
+                                        <p class="text-2xl font-bold">1,234</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h3 class="text-xl font-bold mb-4">Activité Récente</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                    <span>Nouveau produit ajouté: "Smartphone Samsung Galaxy"</span>
+                                    <span class="text-sm text-gray-500">Il y a 2h</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                    <span>Commande #1234 traitée</span>
+                                    <span class="text-sm text-gray-500">Il y a 4h</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                    <span>Produit "Casque Audio" mis à jour</span>
+                                    <span class="text-sm text-gray-500">Il y a 6h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Products Management Section -->
+                    <div id="admin-products" class="admin-section hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Gestion des Produits</h2>
+                            <button onclick="showAddProductForm()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                                <i class="fas fa-plus mr-2"></i>Ajouter Produit
+                            </button>
+                        </div>
+                        
+                        <!-- Products Table -->
+                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Catégorie</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prix</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-products-table" class="divide-y divide-gray-200">
+                                    <!-- Products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Orders Section -->
+                    <div id="admin-orders" class="admin-section hidden">
+                        <h2 class="text-2xl font-bold mb-6">Gestion des Commandes</h2>
+                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">N° Commande</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4">#1234</td>
+                                        <td class="px-6 py-4">Jean Dupont</td>
+                                        <td class="px-6 py-4">299 990 FCFA</td>
+                                        <td class="px-6 py-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">Livré</span></td>
+                                        <td class="px-6 py-4">15/12/2024</td>
+                                        <td class="px-6 py-4">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">Voir</button>
+                                            <button class="text-green-600 hover:text-green-800">Modifier</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Users Section -->
+                    <div id="admin-users" class="admin-section hidden">
+                        <h2 class="text-2xl font-bold mb-6">Gestion des Utilisateurs</h2>
+                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date d'inscription</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Commandes</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4">Jean Dupont</td>
+                                        <td class="px-6 py-4">jean@example.com</td>
+                                        <td class="px-6 py-4">01/12/2024</td>
+                                        <td class="px-6 py-4">5</td>
+                                        <td class="px-6 py-4">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">Voir</button>
+                                            <button class="text-red-600 hover:text-red-800">Bloquer</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="product-form-modal" class="fixed inset-0 bg-black bg-opacity-50 z-60 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold" id="product-form-title">Ajouter un Produit</h3>
+                    <button onclick="closeProductForm()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                <form id="product-form" onsubmit="handleProductSubmit(event)" class="space-y-4">
+                    <input type="hidden" id="product-id" value="">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Nom du Produit</label>
+                            <input type="text" id="product-name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Catégorie</label>
+                            <select id="product-category" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Sélectionner une catégorie</option>
+                                <option value="Électronique">Électronique</option>
+                                <option value="Mode">Mode</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Beauté">Beauté</option>
+                                <option value="Maison">Maison</option>
+                                <option value="Gaming">Gaming</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Prix (FCFA)</label>
+                            <input type="number" id="product-price" step="0.01" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Prix Original (FCFA)</label>
+                            <input type="number" id="product-original-price" step="0.01" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">URL de l'Image</label>
+                        <input type="url" id="product-image" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Note (1-5)</label>
+                            <input type="number" id="product-rating" min="1" max="5" step="0.1" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Nombre d'Avis</label>
+                            <input type="number" id="product-reviews" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Description</label>
+                        <textarea id="product-description" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold">
+                            <span id="submit-btn-text">Ajouter le Produit</span>
+                        </button>
+                        <button type="button" onclick="closeProductForm()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-lg font-semibold">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="fixed inset-0 bg-black bg-opacity-50 z-60 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="text-center mb-6">
+                    <i class="fas fa-shield-alt text-4xl text-purple-600 mb-4"></i>
+                    <h3 class="text-2xl font-bold">Accès Administrateur</h3>
+                    <p class="text-gray-600">Connexion sécurisée requise</p>
+                </div>
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Nom d'utilisateur Admin</label>
+                        <input type="text" id="admin-username" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Mot de passe Admin</label>
+                        <input type="password" id="admin-password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold">
+                        Se Connecter
+                    </button>
+                </form>
+                <div class="mt-4 text-center text-sm text-gray-500">
+                    <p>Démo: admin / admin123</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold" id="auth-title">Connexion</h3>
+                    <button onclick="closeAuthModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                
+                <!-- Login Form -->
+                <div id="login-form">
+                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Email</label>
+                            <input id="login-email" type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Mot de passe</label>
+                            <input id="login-password" type="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <button type="submit" class="w-full btn-primary text-white py-3 rounded-lg font-semibold">
+                            Se Connecter
+                        </button>
+                    </form>
+                    <div class="mt-4 text-center">
+                        <p class="text-gray-600">Pas encore de compte ? 
+                            <button onclick="showSignup()" class="text-purple-600 hover:underline font-semibold">S'inscrire</button>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Signup Form -->
+                <div id="signup-form" class="hidden">
+                    <form onsubmit="handleSignup(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Prénom</label>
+                                <input id="signup-first-name" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Nom</label>
+                                <input id="signup-last-name" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Email</label>
+                            <input id="signup-email" type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Mot de passe</label>
+                            <input id="signup-password" type="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Confirmer le mot de passe</label>
+                            <input type="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <button type="submit" class="w-full btn-primary text-white py-3 rounded-lg font-semibold">
+                            S'inscrire
+                        </button>
+                    </form>
+                    <div class="mt-4 text-center">
+                        <p class="text-gray-600">Déjà un compte ? 
+                            <button onclick="showLogin()" class="text-purple-600 hover:underline font-semibold">Se connecter</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample products data organized by categories
+        const products = [
+            // Électronique
+            {
+                id: 1,
+                name: "Smartphone Samsung Galaxy",
+                price: 299.99,
+                originalPrice: 399.99,
+                image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
+                rating: 4.5,
+                reviews: 1250,
+                category: "Électronique",
+                description: "Smartphone dernière génération avec écran AMOLED et appareil photo 108MP"
+            },
+            {
+                id: 2,
+                name: "Casque Audio Bluetooth",
+                price: 79.99,
+                originalPrice: 129.99,
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+                rating: 4.3,
+                reviews: 890,
+                category: "Électronique",
+                description: "Casque sans fil avec réduction de bruit active et autonomie 30h"
+            },
+            {
+                id: 3,
+                name: "Montre Connectée",
+                price: 199.99,
+                originalPrice: 299.99,
+                image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
+                rating: 4.4,
+                reviews: 723,
+                category: "Électronique",
+                description: "Montre intelligente avec suivi fitness et notifications"
+            },
+            {
+                id: 4,
+                name: "Tablette 10 pouces",
+                price: 249.99,
+                originalPrice: 349.99,
+                image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop",
+                rating: 4.2,
+                reviews: 567,
+                category: "Électronique",
+                description: "Tablette haute performance pour travail et divertissement"
+            },
+            {
+                id: 5,
+                name: "Laptop Gaming",
+                price: 899.99,
+                originalPrice: 1199.99,
+                image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
+                rating: 4.6,
+                reviews: 432,
+                category: "Électronique",
+                description: "Ordinateur portable gaming haute performance avec RTX 4060"
+            },
+            {
+                id: 6,
+                name: "Écouteurs Sans Fil",
+                price: 149.99,
+                originalPrice: 199.99,
+                image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=400&h=400&fit=crop",
+                rating: 4.7,
+                reviews: 1890,
+                category: "Électronique",
+                description: "Écouteurs true wireless avec réduction de bruit"
+            },
+
+            // Mode
+            {
+                id: 7,
+                name: "Robe d'Été Élégante",
+                price: 45.99,
+                originalPrice: 69.99,
+                image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop",
+                rating: 4.7,
+                reviews: 456,
+                category: "Mode",
+                description: "Robe légère et confortable, parfaite pour l'été"
+            },
+            {
+                id: 8,
+                name: "Sac à Main Designer",
+                price: 129.99,
+                originalPrice: 199.99,
+                image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+                rating: 4.8,
+                reviews: 334,
+                category: "Mode",
+                description: "Sac à main en cuir véritable, design moderne et élégant"
+            },
+            {
+                id: 9,
+                name: "Veste en Jean",
+                price: 59.99,
+                originalPrice: 89.99,
+                image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=400&fit=crop",
+                rating: 4.4,
+                reviews: 678,
+                category: "Mode",
+                description: "Veste en jean classique, coupe moderne et confortable"
+            },
+            {
+                id: 10,
+                name: "Chemise Homme Élégante",
+                price: 39.99,
+                originalPrice: 59.99,
+                image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=400&fit=crop",
+                rating: 4.5,
+                reviews: 523,
+                category: "Mode",
+                description: "Chemise business en coton premium, coupe ajustée"
+            },
+            {
+                id: 11,
+                name: "Pantalon Chino",
+                price: 49.99,
+                originalPrice: 79.99,
+                image: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400&h=400&fit=crop",
+                rating: 4.3,
+                reviews: 789,
+                category: "Mode",
+                description: "Pantalon chino polyvalent, parfait pour toute occasion"
+            },
+            {
+                id: 12,
+                name: "Robe de Soirée",
+                price: 89.99,
+                originalPrice: 149.99,
+                image: "https://images.unsplash.com/photo-1566479179817-c0b8b0b6b3b5?w=400&h=400&fit=crop",
+                rating: 4.9,
+                reviews: 234,
+                category: "Mode",
+                description: "Robe de soirée élégante pour occasions spéciales"
+            },
+
+            // Sports
+            {
+                id: 13,
+                name: "Chaussures de Sport",
+                price: 89.99,
+                originalPrice: 119.99,
+                image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
+                rating: 4.6,
+                reviews: 1100,
+                category: "Sports",
+                description: "Chaussures de running ultra-confortables et respirantes"
+            },
+            {
+                id: 14,
+                name: "Tapis de Yoga",
+                price: 29.99,
+                originalPrice: 49.99,
+                image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=400&fit=crop",
+                rating: 4.4,
+                reviews: 567,
+                category: "Sports",
+                description: "Tapis de yoga antidérapant, épaisseur optimale"
+            },
+            {
+                id: 15,
+                name: "Haltères Ajustables",
+                price: 159.99,
+                originalPrice: 219.99,
+                image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop",
+                rating: 4.7,
+                reviews: 345,
+                category: "Sports",
+                description: "Set d'haltères ajustables de 5 à 25kg"
+            },
+            {
+                id: 16,
+                name: "Vélo d'Appartement",
+                price: 299.99,
+                originalPrice: 449.99,
+                image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop",
+                rating: 4.5,
+                reviews: 234,
+                category: "Sports",
+                description: "Vélo d'appartement pliable avec écran LCD"
+            },
+            {
+                id: 17,
+                name: "Ballon de Football",
+                price: 24.99,
+                originalPrice: 39.99,
+                image: "https://images.unsplash.com/photo-1614632537190-23e4b8d6e3d3?w=400&h=400&fit=crop",
+                rating: 4.3,
+                reviews: 678,
+                category: "Sports",
+                description: "Ballon de football officiel, cuir synthétique"
+            },
+            {
+                id: 18,
+                name: "Raquette de Tennis",
+                price: 79.99,
+                originalPrice: 129.99,
+                image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=400&fit=crop",
+                rating: 4.6,
+                reviews: 456,
+                category: "Sports",
+                description: "Raquette de tennis professionnelle, poids équilibré"
+            },
+
+            // Beauté
+            {
+                id: 19,
+                name: "Parfum Premium",
+                price: 69.99,
+                originalPrice: 99.99,
+                image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop",
+                rating: 4.9,
+                reviews: 289,
+                category: "Beauté",
+                description: "Parfum de luxe aux notes florales et boisées"
+            },
+            {
+                id: 20,
+                name: "Palette Maquillage",
+                price: 39.99,
+                originalPrice: 59.99,
+                image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop",
+                rating: 4.7,
+                reviews: 567,
+                category: "Beauté",
+                description: "Palette de maquillage complète avec 20 teintes"
+            },
+            {
+                id: 21,
+                name: "Crème Anti-Âge",
+                price: 49.99,
+                originalPrice: 79.99,
+                image: "https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=400&h=400&fit=crop",
+                rating: 4.5,
+                reviews: 432,
+                category: "Beauté",
+                description: "Crème anti-âge avec acide hyaluronique"
+            },
+            {
+                id: 22,
+                name: "Brosse Nettoyante Visage",
+                price: 89.99,
+                originalPrice: 129.99,
+                image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop",
+                rating: 4.6,
+                reviews: 345,
+                category: "Beauté",
+                description: "Brosse électrique pour nettoyage en profondeur"
+            },
+
+            // Maison
+            {
+                id: 23,
+                name: "Aspirateur Robot",
+                price: 199.99,
+                originalPrice: 299.99,
+                image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+                rating: 4.4,
+                reviews: 678,
+                category: "Maison",
+                description: "Aspirateur robot intelligent avec navigation laser"
+            },
+            {
+                id: 24,
+                name: "Cafetière Expresso",
+                price: 149.99,
+                originalPrice: 219.99,
+                image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop",
+                rating: 4.7,
+                reviews: 456,
+                category: "Maison",
+                description: "Machine à expresso automatique avec mousseur"
+            },
+            {
+                id: 25,
+                name: "Lampe LED Design",
+                price: 59.99,
+                originalPrice: 89.99,
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+                rating: 4.5,
+                reviews: 234,
+                category: "Maison",
+                description: "Lampe LED moderne avec variateur d'intensité"
+            },
+            {
+                id: 26,
+                name: "Coussin Décoratif",
+                price: 19.99,
+                originalPrice: 34.99,
+                image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop",
+                rating: 4.3,
+                reviews: 567,
+                category: "Maison",
+                description: "Coussin décoratif en velours, plusieurs couleurs"
+            },
+
+            // Gaming
+            {
+                id: 27,
+                name: "Manette Gaming Pro",
+                price: 79.99,
+                originalPrice: 109.99,
+                image: "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=400&h=400&fit=crop",
+                rating: 4.8,
+                reviews: 890,
+                category: "Gaming",
+                description: "Manette sans fil professionnelle avec vibrations"
+            },
+            {
+                id: 28,
+                name: "Clavier Gaming RGB",
+                price: 129.99,
+                originalPrice: 179.99,
+                image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=400&fit=crop",
+                rating: 4.6,
+                reviews: 567,
+                category: "Gaming",
+                description: "Clavier mécanique avec rétroéclairage RGB"
+            },
+            {
+                id: 29,
+                name: "Souris Gaming",
+                price: 49.99,
+                originalPrice: 79.99,
+                image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
+                rating: 4.5,
+                reviews: 678,
+                category: "Gaming",
+                description: "Souris gaming haute précision avec 7 boutons"
+            },
+            {
+                id: 30,
+                name: "Casque Gaming",
+                price: 89.99,
+                originalPrice: 129.99,
+                image: "https://images.unsplash.com/photo-1599669454699-248893623440?w=400&h=400&fit=crop",
+                rating: 4.7,
+                reviews: 432,
+                category: "Gaming",
+                description: "Casque gaming surround 7.1 avec micro"
+            }
+        ];
+
+        shopmartApi('/products').then(apiProducts => {
+            products.splice(0, products.length, ...apiProducts.map(shopmartProductFromApi));
+            loadProducts();
+        }).catch(() => loadProducts());
+
+        let cart = [];
+        let currentSlide = 0;
+        const totalSlides = 3;
+        let currentFilter = 'all';
+        let displayedProducts = 8; // Number of products to show initially
+        let searchQuery = '';
+        let isLoggedIn = false;
+        let currentUser = null;
+
+        function formatPrice(price) {
+            return `${Math.round(price * 655.957).toLocaleString('fr-FR')} FCFA`;
+        }
+
+        // Carousel functions
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
+
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const carousel = document.getElementById('carousel');
+            carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update dots
+            const dots = document.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.remove('bg-opacity-50');
+                    dot.classList.add('bg-opacity-100');
+                } else {
+                    dot.classList.remove('bg-opacity-100');
+                    dot.classList.add('bg-opacity-50');
+                }
+            });
+        }
+
+        // Auto-play carousel
+        function startCarousel() {
+            setInterval(() => {
+                nextSlide();
+            }, 5000);
+        }
+
+        // Filter products by category
+        function filterProducts(category) {
+            currentFilter = category;
+            displayedProducts = 8; // Reset to initial number
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-purple-600', 'text-white');
+            
+            loadProducts();
+        }
+
+        // Load products based on current filter
+        function loadProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+            
+            let filteredProducts = products;
+            
+            // Apply category filter
+            if (currentFilter !== 'all') {
+                filteredProducts = filteredProducts.filter(p => p.category === currentFilter);
+            }
+            
+            // Apply search filter
+            if (searchQuery) {
+                filteredProducts = filteredProducts.filter(p => 
+                    p.name.toLowerCase().includes(searchQuery) || 
+                    p.category.toLowerCase().includes(searchQuery) ||
+                    p.description.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            let productsToShow = filteredProducts.slice(0, displayedProducts);
+            
+            productsToShow.forEach(product => {
+                const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+                const stars = '⭐'.repeat(Math.floor(product.rating));
+                
+                const productCard = `
+                    <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer" onclick="showProductModal(${product.id})">
+                        <div class="relative">
+                            <img src="${product.image}" alt="${product.name}" 
+                                 class="product-image h-48 w-full object-cover"
+                                 onerror="this.src=''; this.alt='Image non disponible'; this.style.display='none'; this.parentElement.innerHTML='<div class=\'h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-4xl text-gray-400\'>📦</div>';"
+                            />
+                            <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold">
+                                -${discount}%
+                            </div>
+                            <div class="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                ${product.category}
+                            </div>
+                            <button onclick="event.stopPropagation(); addToCart(${product.id})" 
+                                    class="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500"></i>
+                            </button>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 mb-2 truncate">${product.name}</h4>
+                            <div class="flex items-center mb-2">
+                                <span class="text-yellow-400">${stars}</span>
+                                <span class="text-gray-500 text-sm ml-1">(${product.reviews})</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="text-xl font-bold text-purple-600">${formatPrice(product.price)}</span>
+                                    <span class="text-gray-400 line-through ml-2">${formatPrice(product.originalPrice)}</span>
+                                </div>
+                                <button onclick="event.stopPropagation(); addToCart(${product.id})" 
+                                        class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                                    Ajouter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += productCard;
+            });
+            
+            // Show/hide load more button
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            if (displayedProducts >= filteredProducts.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'inline-block';
+            }
+        }
+
+        // Load more products
+        function loadMoreProducts() {
+            displayedProducts += 8;
+            loadProducts();
+        }
+
+        // Add to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({...product, quantity: 1});
+            }
+            
+            updateCartCount();
+            showNotification(`${product.name} ajouté au panier!`);
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            const cartCountElement = document.getElementById('cart-count');
+            cartCountElement.textContent = count;
+            cartCountElement.classList.add('cart-count');
+            setTimeout(() => cartCountElement.classList.remove('cart-count'), 500);
+        }
+
+        // Show product modal
+        function showProductModal(productId) {
+            const product = products.find(p => p.id === productId);
+            const modal = document.getElementById('product-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+            
+            modalTitle.textContent = product.name;
+            
+            const stars = '⭐'.repeat(Math.floor(product.rating));
+            const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+            
+            modalContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="text-center">
+                        <img src="${product.image}" alt="${product.name}" 
+                             class="h-64 w-full object-cover rounded-lg mb-4"
+                             onerror="this.src=''; this.style.display='none'; this.parentElement.innerHTML='<div class=\'h-64 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center text-8xl mb-4 text-gray-400\'>📦</div>';">
+                        <div class="flex justify-center space-x-2">
+                            <img src="${product.image}" alt="${product.name}" 
+                                 class="w-16 h-16 object-cover rounded-lg cursor-pointer border-2 border-purple-500"
+                                 onerror="this.src=''; this.style.display='none'; this.outerHTML='<div class=\'w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center text-2xl cursor-pointer border-2 border-purple-500 text-gray-400\'>📦</div>';">
+                            <img src="${product.image}" alt="${product.name}" 
+                                 class="w-16 h-16 object-cover rounded-lg cursor-pointer"
+                                 onerror="this.src=''; this.style.display='none'; this.outerHTML='<div class=\'w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center text-2xl cursor-pointer text-gray-400\'>📦</div>';">
+                            <img src="${product.image}" alt="${product.name}" 
+                                 class="w-16 h-16 object-cover rounded-lg cursor-pointer"
+                                 onerror="this.src=''; this.style.display='none'; this.outerHTML='<div class=\'w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center text-2xl cursor-pointer text-gray-400\'>📦</div>';">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-4">
+                            <span class="bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold">-${discount}%</span>
+                            <span class="bg-green-500 text-white px-2 py-1 rounded-full text-sm font-bold ml-2">En Stock</span>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <span class="text-yellow-400 text-lg">${stars}</span>
+                            <span class="text-gray-500 ml-2">${product.rating} (${product.reviews} avis)</span>
+                        </div>
+                        <div class="mb-4">
+                            <span class="text-3xl font-bold text-purple-600">${formatPrice(product.price)}</span>
+                            <span class="text-gray-400 line-through ml-3 text-xl">${formatPrice(product.originalPrice)}</span>
+                        </div>
+                        <p class="text-gray-600 mb-6">${product.description}</p>
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold mb-2">Quantité:</label>
+                            <div class="flex items-center space-x-3">
+                                <button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">-</button>
+                                <span class="px-4 py-1 border rounded">1</span>
+                                <button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">+</button>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <button onclick="addToCart(${product.id}); closeModal();" 
+                                    class="w-full btn-primary text-white py-3 rounded-lg font-semibold text-lg">
+                                Ajouter au Panier - ${formatPrice(product.price)}
+                            </button>
+                            <button class="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold text-lg transition-colors">
+                                Acheter Maintenant
+                            </button>
+                        </div>
+                        <div class="mt-6 text-sm text-gray-600">
+                            <p><i class="fas fa-truck mr-2"></i>Livraison gratuite pour les commandes de plus de 32 798 FCFA</p>
+                            <p><i class="fas fa-undo mr-2"></i>Retours gratuits sous 30 jours</p>
+                            <p><i class="fas fa-shield-alt mr-2"></i>Garantie 2 ans</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('product-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('product-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('cart-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCart();
+            }
+        });
+
+        document.getElementById('auth-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAuthModal();
+            }
+        });
+
+        // Smooth scroll to section
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // Search functionality
+        function searchProducts() {
+            const input = document.getElementById('search-input');
+            searchQuery = input.value.toLowerCase().trim();
+            currentFilter = 'all';
+            displayedProducts = 8;
+            
+            // Reset filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            document.querySelector('.filter-btn').classList.remove('bg-gray-200', 'text-gray-700');
+            document.querySelector('.filter-btn').classList.add('bg-purple-600', 'text-white');
+            
+            loadProducts();
+        }
+
+        function handleSearchEnter(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        function performSearch() {
+            searchProducts();
+            scrollToSection('products');
+        }
+
+        // Cart functionality
+        function toggleCart() {
+            const modal = document.getElementById('cart-modal');
+            updateCartDisplay();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeCart() {
+            const modal = document.getElementById('cart-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openPayment() {
+            if (cart.length === 0) return;
+            if (!sessionStorage.getItem('shopmartUserToken')) {
+                closeCart();
+                toggleAuthModal();
+                showNotification('Connectez-vous pour commander.');
+                return;
+            }
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('payment-total').textContent = formatPrice(total);
+            const modal = document.getElementById('payment-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closePayment() {
+            const modal = document.getElementById('payment-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function submitPayment(event) {
+            event.preventDefault();
+            const operator = document.querySelector('input[name="payment-operator"]:checked').value;
+            const paymentPhone = document.getElementById('payment-number').value.replace(/\s/g, '');
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            try {
+                await shopmartApi('/orders', { method: 'POST', body: JSON.stringify({ totalFcfa: Math.round(total * 655.957), operator, paymentPhone }) });
+                closePayment();
+                closeCart();
+                showNotification(`Commande enregistrée via ${operator} !`);
+                cart = [];
+                updateCartCount();
+            } catch (error) {
+                showNotification(error.message);
+            }
+        }
+
+        function updateCartDisplay() {
+            const cartContent = document.getElementById('cart-content');
+            
+            if (cart.length === 0) {
+                cartContent.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+                        <h4 class="text-xl font-semibold text-gray-600 mb-2">Votre panier est vide</h4>
+                        <p class="text-gray-500 mb-6">Ajoutez des produits pour commencer vos achats</p>
+                        <button onclick="closeCart(); scrollToSection('products')" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold">
+                            Continuer les Achats
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            let cartHTML = '<div class="space-y-4 max-h-96 overflow-y-auto">';
+            
+            cart.forEach(item => {
+                cartHTML += `
+                    <div class="flex items-center space-x-4 p-3 border rounded-lg">
+                        <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded"
+                             onerror="this.src=''; this.style.display='none'; this.outerHTML='<div class=\'w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-2xl text-gray-400\'>📦</div>';">
+                        <div class="flex-1">
+                            <h5 class="font-semibold text-sm">${item.name}</h5>
+                            <p class="text-purple-600 font-bold">${formatPrice(item.price)}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})" class="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded flex items-center justify-center">-</button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})" class="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded flex items-center justify-center">+</button>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            cartHTML += '</div>';
+            cartHTML += `
+                <div class="border-t pt-4 mt-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-lg font-semibold">Total:</span>
+                        <span class="text-2xl font-bold text-purple-600">${formatPrice(total)}</span>
+                    </div>
+                    <button onclick="openPayment()" class="w-full btn-primary text-white py-3 rounded-lg font-semibold mb-2">
+                        Procéder au Paiement
+                    </button>
+                    <button onclick="clearCart()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg font-semibold">
+                        Vider le Panier
+                    </button>
+                </div>
+            `;
+            
+            cartContent.innerHTML = cartHTML;
+        }
+
+        function updateCartQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+            
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                updateCartCount();
+                updateCartDisplay();
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartCount();
+            updateCartDisplay();
+            showNotification('Produit retiré du panier');
+        }
+
+        function clearCart() {
+            cart = [];
+            updateCartCount();
+            updateCartDisplay();
+            showNotification('Panier vidé');
+        }
+
+        // Auth functionality
+        function updateUserAccountButton() {
+            const button = document.getElementById('user-account-button');
+            const user = sessionStorage.getItem('shopmartUser');
+            if (user) {
+                const account = JSON.parse(user);
+                button.innerHTML = `<span class="mr-2 text-sm">${account.firstName}</span><i class="fas fa-sign-out-alt text-xl"></i>`;
+                button.onclick = () => { sessionStorage.removeItem('shopmartUserToken'); sessionStorage.removeItem('shopmartUser'); isLoggedIn = false; currentUser = null; updateUserAccountButton(); showNotification('Déconnexion réussie.'); };
+            }
+        }
+
+        function toggleAuthModal() {
+            if (sessionStorage.getItem('shopmartUserToken')) { updateUserAccountButton(); return; }
+            const modal = document.getElementById('auth-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            showLogin();
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function showLogin() {
+            document.getElementById('auth-title').textContent = 'Connexion';
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+        }
+
+        function showSignup() {
+            document.getElementById('auth-title').textContent = 'Inscription';
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.remove('hidden');
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            try {
+                const result = await shopmartApi('/auth/login', { method: 'POST', body: JSON.stringify({ email: document.getElementById('login-email').value, password: document.getElementById('login-password').value }) });
+                sessionStorage.setItem('shopmartUserToken', result.token);
+                isLoggedIn = true;
+                currentUser = result.user;
+                sessionStorage.setItem('shopmartUser', JSON.stringify(result.user));
+                closeAuthModal();
+                showNotification('Connexion réussie !');
+            } catch (error) { showNotification(error.message); }
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+            try {
+                const firstName = document.getElementById('signup-first-name').value;
+                const lastName = document.getElementById('signup-last-name').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                await shopmartApi('/auth/register', { method: 'POST', body: JSON.stringify({ firstName, lastName, email, password }) });
+                const result = await shopmartApi('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+                sessionStorage.setItem('shopmartUserToken', result.token);
+                sessionStorage.setItem('shopmartUser', JSON.stringify(result.user));
+                isLoggedIn = true;
+                currentUser = result.user;
+                closeAuthModal();
+                updateUserAccountButton();
+                showNotification('Compte créé et connexion réussie !');
+            } catch (error) { showNotification(error.message); }
+        }
+
+        updateUserAccountButton();
+
+        // Contact form
+        function submitContactForm(event) {
+            event.preventDefault();
+            const fields = event.target.querySelectorAll('input, textarea');
+            const subject = encodeURIComponent(fields[2].value);
+            const body = encodeURIComponent(`Nom : ${fields[0].value}\nEmail : ${fields[1].value}\n\nMessage :\n${fields[3].value}`);
+            window.location.href = `mailto:knathanael234@gmail.com?subject=${subject}&body=${body}`;
+        }
+
+        // Admin functionality
+        let isAdmin = false;
+        let nextProductId = 31; // Next available ID for new products
+
+        // Secret admin access (double-click on search bar)
+        function checkAdminAccess(event) {
+            if (event.detail === 2) { // Double click
+                const input = event.target;
+                if (input.value.toLowerCase() === 'admin') {
+                    showAdminLogin();
+                    input.value = '';
+                }
+            }
+        }
+
+        function showAdminLogin() {
+            const modal = document.getElementById('admin-login-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+            
+            // Simple demo authentication
+            if (username === 'admin' && password === 'admin123') {
+                isAdmin = true;
+                closeAdminLogin();
+                showAdminPanel();
+                showNotification('Connexion admin réussie !');
+            } else {
+                showNotification('Identifiants incorrects !');
+            }
+        }
+
+        function closeAdminLogin() {
+            const modal = document.getElementById('admin-login-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function showAdminPanel() {
+            const panel = document.getElementById('admin-panel');
+            panel.classList.remove('hidden');
+            loadAdminProducts();
+            updateAdminStats();
+        }
+
+        function showAdminSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+            
+            // Show selected section
+            document.getElementById(`admin-${section}`).classList.remove('hidden');
+            
+            // Update title
+            const titles = {
+                'dashboard': 'Tableau de Bord',
+                'products': 'Gestion des Produits',
+                'orders': 'Gestion des Commandes',
+                'users': 'Gestion des Utilisateurs'
+            };
+            document.getElementById('admin-section-title').textContent = titles[section];
+            
+            // Update nav buttons
+            document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+                btn.classList.remove('bg-gray-700');
+            });
+            event.target.classList.add('bg-gray-700');
+        }
+
+        function loadAdminProducts() {
+            const tbody = document.getElementById('admin-products-table');
+            tbody.innerHTML = '';
+            
+            products.forEach(product => {
+                const row = `
+                    <tr>
+                        <td class="px-6 py-4">
+                            <img src="${product.image}" alt="${product.name}" class="w-12 h-12 object-cover rounded"
+                                 onerror="this.src=''; this.style.display='none'; this.outerHTML='<div class=\'w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-xl text-gray-400\'>📦</div>';">
+                        </td>
+                        <td class="px-6 py-4 font-medium">${product.name}</td>
+                        <td class="px-6 py-4">${product.category}</td>
+                        <td class="px-6 py-4">${formatPrice(product.price)}</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">En Stock</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button onclick="editProduct(${product.id})" class="text-blue-600 hover:text-blue-800 mr-2">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteProduct(${product.id})" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function updateAdminStats() {
+            document.getElementById('total-products').textContent = products.length;
+        }
+
+        function showAddProductForm() {
+            document.getElementById('product-form-title').textContent = 'Ajouter un Produit';
+            document.getElementById('submit-btn-text').textContent = 'Ajouter le Produit';
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            
+            const modal = document.getElementById('product-form-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function editProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            document.getElementById('product-form-title').textContent = 'Modifier le Produit';
+            document.getElementById('submit-btn-text').textContent = 'Mettre à Jour';
+            
+            // Fill form with product data
+            document.getElementById('product-id').value = product.id;
+            document.getElementById('product-name').value = product.name;
+            document.getElementById('product-category').value = product.category;
+            document.getElementById('product-price').value = product.price;
+            document.getElementById('product-original-price').value = product.originalPrice;
+            document.getElementById('product-image').value = product.image;
+            document.getElementById('product-rating').value = product.rating;
+            document.getElementById('product-reviews').value = product.reviews;
+            document.getElementById('product-description').value = product.description;
+            
+            const modal = document.getElementById('product-form-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function handleProductSubmit(event) {
+            event.preventDefault();
+            
+            const productData = {
+                name: document.getElementById('product-name').value,
+                category: document.getElementById('product-category').value,
+                price: parseFloat(document.getElementById('product-price').value),
+                originalPrice: parseFloat(document.getElementById('product-original-price').value),
+                image: document.getElementById('product-image').value,
+                rating: parseFloat(document.getElementById('product-rating').value),
+                reviews: parseInt(document.getElementById('product-reviews').value),
+                description: document.getElementById('product-description').value
+            };
+            
+            const productId = document.getElementById('product-id').value;
+            
+            if (productId) {
+                // Update existing product
+                const index = products.findIndex(p => p.id == productId);
+                if (index !== -1) {
+                    products[index] = { ...products[index], ...productData };
+                    showNotification('Produit mis à jour avec succès !');
+                }
+            } else {
+                // Add new product
+                const newProduct = {
+                    id: nextProductId++,
+                    ...productData
+                };
+                products.push(newProduct);
+                showNotification('Produit ajouté avec succès !');
+            }
+            
+            closeProductForm();
+            loadAdminProducts();
+            loadProducts(); // Refresh main product display
+            updateAdminStats();
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
+                const index = products.findIndex(p => p.id === productId);
+                if (index !== -1) {
+                    const productName = products[index].name;
+                    products.splice(index, 1);
+                    
+                    // Remove from cart if present
+                    cart = cart.filter(item => item.id !== productId);
+                    updateCartCount();
+                    
+                    loadAdminProducts();
+                    loadProducts(); // Refresh main product display
+                    updateAdminStats();
+                    showNotification(`Produit "${productName}" supprimé avec succès !`);
+                }
+            }
+        }
+
+        function closeProductForm() {
+            const modal = document.getElementById('product-form-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function logoutAdmin() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                isAdmin = false;
+                const panel = document.getElementById('admin-panel');
+                panel.classList.add('hidden');
+                showNotification('Déconnexion admin réussie !');
+            }
+        }
+
+        // Close admin modals when clicking outside
+        document.getElementById('admin-login-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAdminLogin();
+            }
+        });
+
+        document.getElementById('product-form-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProductForm();
+            }
+        });
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            updateCarousel();
+            startCarousel();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9764f7ca7081b79f',t:'MTc1NjM5NjI2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
