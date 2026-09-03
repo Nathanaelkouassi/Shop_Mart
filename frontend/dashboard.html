@@ -57,18 +57,19 @@
                 <article class="rounded-xl bg-white p-6 shadow-sm xl:col-span-2"><div class="flex items-center justify-between"><h2 class="text-xl font-bold">Activité récente</h2><a href="produits.html" class="text-sm font-semibold text-purple-600 hover:text-purple-800">Voir les produits</a></div><div class="mt-5 divide-y divide-gray-100"><div class="flex items-center gap-4 py-4"><span class="rounded-full bg-blue-100 p-3 text-blue-600"><i class="fas fa-box"></i></span><div class="flex-1"><p class="font-semibold">Nouveau produit ajouté</p><p class="text-sm text-gray-500">Smartphone Samsung Galaxy</p></div><span class="text-sm text-gray-400">Il y a 2h</span></div><div class="flex items-center gap-4 py-4"><span class="rounded-full bg-green-100 p-3 text-green-600"><i class="fas fa-check"></i></span><div class="flex-1"><p class="font-semibold">Commande traitée</p><p class="text-sm text-gray-500">Commande #1234</p></div><span class="text-sm text-gray-400">Il y a 4h</span></div><div class="flex items-center gap-4 py-4"><span class="rounded-full bg-purple-100 p-3 text-purple-600"><i class="fas fa-pen"></i></span><div class="flex-1"><p class="font-semibold">Produit mis à jour</p><p class="text-sm text-gray-500">Casque Audio Bluetooth</p></div><span class="text-sm text-gray-400">Il y a 6h</span></div></div></article>
                 <article class="rounded-xl bg-white p-6 shadow-sm"><h2 class="text-xl font-bold">Accès rapides</h2><div class="mt-5 space-y-3"><button id="quick-add-product" class="flex w-full items-center gap-3 rounded-lg bg-gray-50 p-4 text-left font-semibold hover:bg-purple-50"><i class="fas fa-box-open w-5 text-purple-600"></i>Ajouter un produit<i class="fas fa-arrow-right ml-auto text-gray-400"></i></button><a href="produits.html" class="flex items-center gap-3 rounded-lg bg-gray-50 p-4 font-semibold hover:bg-purple-50"><i class="fas fa-list w-5 text-purple-600"></i>Voir les produits<i class="fas fa-arrow-right ml-auto text-gray-400"></i></a><a href="categories.html" class="flex items-center gap-3 rounded-lg bg-gray-50 p-4 font-semibold hover:bg-purple-50"><i class="fas fa-layer-group w-5 text-purple-600"></i>Voir les catégories<i class="fas fa-arrow-right ml-auto text-gray-400"></i></a><a href="contact.html" class="flex items-center gap-3 rounded-lg bg-gray-50 p-4 font-semibold hover:bg-purple-50"><i class="fas fa-comments w-5 text-purple-600"></i>Lire les messages<i class="fas fa-arrow-right ml-auto text-gray-400"></i></a></div></article>
             </section>
+            <section class="mt-6 rounded-xl bg-white p-6 shadow-sm"><div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><h2 class="text-xl font-bold">Gestion des articles</h2><p class="mt-1 text-sm text-gray-500">Modifiez ou supprimez les produits visibles dans la boutique.</p></div><button id="refresh-products" class="rounded-lg border border-gray-300 px-4 py-2 font-semibold hover:bg-gray-50"><i class="fas fa-sync-alt mr-2"></i>Actualiser</button></div><div class="mt-4 overflow-x-auto"><table class="w-full min-w-[700px] text-left text-sm"><thead class="border-b text-gray-500"><tr><th class="px-3 py-3">Article</th><th class="px-3 py-3">Catégorie</th><th class="px-3 py-3">Prix</th><th class="px-3 py-3 text-right">Actions</th></tr></thead><tbody id="products-table" class="divide-y divide-gray-100"><tr><td colspan="4" class="px-3 py-4 text-gray-500">Chargement...</td></tr></tbody></table></div></section>
             <section class="mt-6 rounded-xl bg-white p-6 shadow-sm"><div class="flex items-center justify-between"><h2 class="text-xl font-bold">Connexions propriétaires</h2><span class="text-sm text-gray-500">50 dernières connexions</span></div><div class="mt-4 overflow-x-auto"><table class="w-full text-left text-sm"><thead class="border-b text-gray-500"><tr><th class="px-3 py-3">Date</th><th class="px-3 py-3">Utilisateur</th><th class="px-3 py-3">Adresse IP</th></tr></thead><tbody id="login-events" class="divide-y divide-gray-100"><tr><td colspan="3" class="px-3 py-4 text-gray-500">Chargement...</td></tr></tbody></table></div></section>
             <section class="mt-6 rounded-xl bg-white p-6 shadow-sm"><div class="flex items-center justify-between"><h2 class="text-xl font-bold">Clients inscrits</h2><span class="text-sm text-gray-500">Comptes clients</span></div><div class="mt-4 overflow-x-auto"><table class="w-full text-left text-sm"><thead class="border-b text-gray-500"><tr><th class="px-3 py-3">Nom</th><th class="px-3 py-3">Email</th><th class="px-3 py-3">Inscription</th><th class="px-3 py-3">Dernière connexion</th></tr></thead><tbody id="users-table" class="divide-y divide-gray-100"><tr><td colspan="4" class="px-3 py-4 text-gray-500">Chargement...</td></tr></tbody></table></div></section>
         </main>
     </div>
     <div id="product-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4">
         <form id="product-form" class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
-            <div class="mb-6 flex items-center justify-between"><h2 class="text-2xl font-bold">Ajouter un article</h2><button type="button" id="close-product-form" class="text-2xl text-gray-400 hover:text-gray-700" aria-label="Fermer">&times;</button></div>
+            <div class="mb-6 flex items-center justify-between"><h2 id="product-form-title" class="text-2xl font-bold">Ajouter un article</h2><button type="button" id="close-product-form" class="text-2xl text-gray-400 hover:text-gray-700" aria-label="Fermer">&times;</button></div>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"><label><span class="mb-2 block font-semibold">Nom de l'article</span><input id="product-name" required class="w-full rounded-lg border border-gray-300 px-4 py-3"></label><label><span class="mb-2 block font-semibold">Catégorie</span><select id="product-category" required class="w-full rounded-lg border border-gray-300 px-4 py-3"><option>Électronique</option><option>Mode</option><option>Maison</option><option>Sports</option><option>Beauté</option><option>Gaming</option></select></label><label><span class="mb-2 block font-semibold">Prix (FCFA)</span><input id="product-price" required min="1" type="number" class="w-full rounded-lg border border-gray-300 px-4 py-3"></label><label><span class="mb-2 block font-semibold">Prix original (FCFA)</span><input id="product-original-price" required min="1" type="number" class="w-full rounded-lg border border-gray-300 px-4 py-3"></label></div>
             <label class="mt-4 block"><span class="mb-2 block font-semibold">Image de l'article</span><input id="product-image-file" type="file" accept="image/*" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3"><span class="mt-1 block text-sm text-gray-500">Choisissez une image sur votre téléphone ou votre ordinateur.</span></label>
             <label class="mt-4 block"><span class="mb-2 block font-semibold">Ou URL de l'image</span><input id="product-image" type="url" placeholder="https://..." class="w-full rounded-lg border border-gray-300 px-4 py-3"></label>
             <label class="mt-4 block"><span class="mb-2 block font-semibold">Description</span><textarea id="product-description" required rows="4" class="w-full rounded-lg border border-gray-300 px-4 py-3"></textarea></label>
-            <p id="product-success" class="mt-4 hidden rounded-lg bg-green-100 p-3 text-green-800">Article ajouté avec succès.</p><p id="product-image-error" class="mt-4 hidden rounded-lg bg-red-100 p-3 text-red-800">Ajoutez une image ou une URL d'image.</p><button type="submit" class="btn-primary mt-6 w-full rounded-lg py-3 font-semibold text-white"><i class="fas fa-save mr-2"></i>Enregistrer l'article</button>
+            <input id="product-id" type="hidden"><p id="product-success" class="mt-4 hidden rounded-lg bg-green-100 p-3 text-green-800">Article enregistré avec succès.</p><p id="product-image-error" class="mt-4 hidden rounded-lg bg-red-100 p-3 text-red-800">Ajoutez une image ou une URL d'image.</p><button id="product-submit" type="submit" class="btn-primary mt-6 w-full rounded-lg py-3 font-semibold text-white"><i class="fas fa-save mr-2"></i>Enregistrer l'article</button>
         </form>
     </div>
     <script>
@@ -84,11 +85,51 @@
             try {
                 storedProducts = await shopmartApi('/products');
                 document.getElementById('total-products').textContent = storedProducts.length;
+                renderProducts();
                 loadLoginEvents();
                 loadUsers();
             } catch (error) {
                 document.getElementById('login-error').textContent = error.message;
                 document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>'"]/g, function (character) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]; });
+        }
+
+        function renderProducts() {
+            var productsTable = document.getElementById('products-table');
+            productsTable.innerHTML = storedProducts.length ? storedProducts.map(function (product) {
+                return '<tr><td class="px-3 py-3"><div class="flex items-center gap-3"><img src="' + escapeHtml(product.image) + '" alt="" class="h-12 w-12 rounded-lg object-cover"><span class="font-semibold">' + escapeHtml(product.name) + '</span></div></td><td class="px-3 py-3">' + escapeHtml(product.category) + '</td><td class="px-3 py-3">' + Number(product.priceFcfa).toLocaleString('fr-FR') + ' FCFA</td><td class="px-3 py-3 text-right"><button data-action="edit" data-product-id="' + product.id + '" class="mr-2 rounded-lg px-3 py-2 font-semibold text-purple-600 hover:bg-purple-50"><i class="fas fa-pen mr-1"></i>Modifier</button><button data-action="delete" data-product-id="' + product.id + '" class="rounded-lg px-3 py-2 font-semibold text-red-600 hover:bg-red-50"><i class="fas fa-trash mr-1"></i>Supprimer</button></td></tr>';
+            }).join('') : '<tr><td colspan="4" class="px-3 py-4 text-gray-500">Aucun article disponible.</td></tr>';
+        }
+
+        function editProduct(productId) {
+            var product = storedProducts.find(function (item) { return String(item.id) === String(productId); });
+            if (!product) return;
+            document.getElementById('product-id').value = product.id;
+            document.getElementById('product-name').value = product.name;
+            document.getElementById('product-category').value = product.category;
+            document.getElementById('product-price').value = Math.round(Number(product.priceFcfa));
+            document.getElementById('product-original-price').value = Math.round(Number(product.originalPriceFcfa));
+            document.getElementById('product-image').value = product.image;
+            document.getElementById('product-description').value = product.description;
+            document.getElementById('product-form-title').textContent = 'Modifier un article';
+            document.getElementById('product-submit').innerHTML = '<i class="fas fa-save mr-2"></i>Enregistrer les modifications';
+            openProductForm();
+        }
+
+        async function deleteProduct(productId) {
+            var product = storedProducts.find(function (item) { return String(item.id) === String(productId); });
+            if (!product || !window.confirm('Supprimer définitivement « ' + product.name + ' » ?')) return;
+            try {
+                await shopmartApi('/products/' + productId, { method: 'DELETE' });
+                storedProducts = await shopmartApi('/products');
+                document.getElementById('total-products').textContent = storedProducts.length;
+                renderProducts();
+            } catch (error) {
+                window.alert(error.message);
             }
         }
 
@@ -128,8 +169,26 @@
         document.getElementById('menu-button').addEventListener('click', function () { document.getElementById('dashboard-menu').classList.toggle('hidden'); });
         document.getElementById('owner-logout').addEventListener('click', function () { sessionStorage.removeItem('shopmartOwnerToken'); window.location.reload(); });
         function openProductForm() { productModal.classList.remove('hidden'); productModal.classList.add('flex'); }
-        document.getElementById('open-product-form').addEventListener('click', openProductForm);
-        document.getElementById('quick-add-product').addEventListener('click', openProductForm);
+        function openNewProductForm() {
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            document.getElementById('product-form-title').textContent = 'Ajouter un article';
+            document.getElementById('product-submit').innerHTML = '<i class="fas fa-save mr-2"></i>Enregistrer l\'article';
+            openProductForm();
+        }
+        document.getElementById('products-table').addEventListener('click', function (event) {
+            var button = event.target.closest('button[data-action]');
+            if (!button) return;
+            if (button.dataset.action === 'edit') editProduct(button.dataset.productId);
+            if (button.dataset.action === 'delete') deleteProduct(button.dataset.productId);
+        });
+        document.getElementById('refresh-products').addEventListener('click', async function () {
+            storedProducts = await shopmartApi('/products');
+            document.getElementById('total-products').textContent = storedProducts.length;
+            renderProducts();
+        });
+        document.getElementById('open-product-form').addEventListener('click', openNewProductForm);
+        document.getElementById('quick-add-product').addEventListener('click', openNewProductForm);
         document.getElementById('close-product-form').addEventListener('click', function () { productModal.classList.add('hidden'); productModal.classList.remove('flex'); });
         document.getElementById('product-form').addEventListener('submit', async function (event) {
             event.preventDefault();
@@ -148,11 +207,17 @@
                     });
                 }
                 try {
-                    await shopmartApi('/products', { method: 'POST', body: JSON.stringify({ name: document.getElementById('product-name').value.trim(), category: document.getElementById('product-category').value, priceFcfa: Number(document.getElementById('product-price').value), originalPriceFcfa: Number(document.getElementById('product-original-price').value), image: imageUrl, rating: 5, reviews: 0, description: document.getElementById('product-description').value.trim() }) });
+                    var productId = document.getElementById('product-id').value;
+                    var productPayload = { name: document.getElementById('product-name').value.trim(), category: document.getElementById('product-category').value, priceFcfa: Number(document.getElementById('product-price').value), originalPriceFcfa: Number(document.getElementById('product-original-price').value), image: imageUrl, rating: 5, reviews: 0, description: document.getElementById('product-description').value.trim() };
+                    await shopmartApi(productId ? '/products/' + productId : '/products', { method: productId ? 'PUT' : 'POST', body: JSON.stringify(productPayload) });
                     storedProducts = await shopmartApi('/products');
                     document.getElementById('total-products').textContent = storedProducts.length;
+                    renderProducts();
                     document.getElementById('product-success').classList.remove('hidden');
                     this.reset();
+                    document.getElementById('product-id').value = '';
+                    document.getElementById('product-form-title').textContent = 'Ajouter un article';
+                    document.getElementById('product-submit').innerHTML = '<i class="fas fa-save mr-2"></i>Enregistrer l\'article';
                 } catch (error) {
                     document.getElementById('product-image-error').textContent = error.message;
                     document.getElementById('product-image-error').classList.remove('hidden');

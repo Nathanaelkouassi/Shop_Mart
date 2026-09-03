@@ -130,6 +130,16 @@ async function start() {
         saveDatabase(database);
         res.status(201).json({ id: productId, message: 'Produit ajouté.' });
     });
+    app.put('/api/products/:id', requireOwner, (req, res) => {
+        const body = req.body || {};
+        if (!['name', 'category', 'image', 'description'].every((field) => typeof body[field] === 'string' && body[field].trim()) || !Number.isFinite(Number(body.priceFcfa)) || !Number.isFinite(Number(body.originalPriceFcfa))) return res.status(400).json({ error: 'Informations produit invalides.' });
+        const productId = Number(req.params.id);
+        const product = rows(database, 'SELECT id FROM products WHERE id = ?', [productId])[0];
+        if (!product) return res.status(404).json({ error: 'Produit introuvable.' });
+        database.run('UPDATE products SET name = ?, category = ?, price_fcfa = ?, original_price_fcfa = ?, image = ?, description = ? WHERE id = ?', [body.name.trim(), body.category.trim(), Math.round(Number(body.priceFcfa)), Math.round(Number(body.originalPriceFcfa)), body.image.trim(), body.description.trim(), productId]);
+        saveDatabase(database);
+        res.json({ message: 'Produit mis à jour.' });
+    });
     app.delete('/api/products/:id', requireOwner, (req, res) => { database.run('DELETE FROM products WHERE id = ?', [Number(req.params.id)]); saveDatabase(database); res.status(204).end(); });
 
     app.post('/api/contact', (req, res) => {
