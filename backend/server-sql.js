@@ -111,7 +111,8 @@ const serializeOrder = (doc) => ({
     operator: doc.operator,
     paymentPhone: doc.paymentPhone,
     status: doc.status,
-    createdAt: doc.createdAt
+    createdAt: doc.createdAt,
+    user: doc.userId ? { firstName: doc.userId.firstName, lastName: doc.userId.lastName, email: doc.userId.email } : null
 });
 
 // ---------- Création / mise à jour du compte propriétaire ----------
@@ -282,7 +283,7 @@ async function start() {
         res.status(201).json({ status: 'pending', message: 'Commande enregistrée en attente de paiement.' });
     });
     app.get('/api/orders', requireOwner, async (req, res) => {
-        const orders = await Order.find().sort({ _id: -1 });
+        const orders = await Order.find().populate('userId', 'firstName lastName email').sort({ _id: -1 });
         res.json(orders.map(serializeOrder));
     });
     app.delete('/api/orders/:id', requireOwner, async (req, res) => {
