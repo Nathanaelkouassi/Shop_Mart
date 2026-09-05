@@ -7,7 +7,7 @@ const SHOPMART_API_URL = window.SHOPMART_API_URL || (
 
 async function shopmartApi(path, options = {}) {
     const headers = { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) };
-    const token = path.startsWith('/auth/owner') || path.startsWith('/products') || path.startsWith('/users') || path.startsWith('/owner/')
+    const token = path.startsWith('/auth/owner') || path.startsWith('/products') || path.startsWith('/users') || path.startsWith('/owner/') || path.startsWith('/contact')
         ? sessionStorage.getItem('shopmartOwnerToken')
         : sessionStorage.getItem('shopmartUserToken');
     if (token) headers.Authorization = `Bearer ${token}`;

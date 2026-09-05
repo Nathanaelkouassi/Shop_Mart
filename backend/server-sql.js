@@ -21,7 +21,9 @@ const userSchema = new mongoose.Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     passwordHash: { type: String, required: true },
-    lastLoginAt: { type: Date, default: null }
+    lastLoginAt: { type: Date, default: null },
+    lastLogoutAt: { type: Date, default: null },
+    isOnline: { type: Boolean, default: false }
 }, { timestamps: { createdAt: 'createdAt', updatedAt: false } });
 
 const ownerLoginEventSchema = new mongoose.Schema({
@@ -82,7 +84,9 @@ const serializeUser = (doc) => ({
     lastName: doc.lastName,
     email: doc.email,
     createdAt: doc.createdAt,
-    lastLoginAt: doc.lastLoginAt
+    lastLoginAt: doc.lastLoginAt,
+    lastLogoutAt: doc.lastLogoutAt,
+    isOnline: doc.isOnline
 });
 
 const serializeLoginEvent = (doc) => ({
@@ -182,8 +186,15 @@ async function start() {
         const account = await User.findOne({ email });
         if (!account || !bcrypt.compareSync(req.body?.password || '', account.passwordHash)) return res.status(401).json({ error: 'Email ou mot de passe incorrect.' });
         account.lastLoginAt = new Date();
+        account.lastLogoutAt = null;
+        account.isOnline = true;
         await account.save();
         res.json({ token: jwt.sign({ userId: account._id.toString(), email: account.email }, jwtSecret, { expiresIn: '8h' }), user: { firstName: account.firstName, lastName: account.lastName, email: account.email } });
+    });
+
+    app.post('/api/auth/logout', requireUser, async (req, res) => {
+        await User.findByIdAndUpdate(req.user.userId, { isOnline: false, lastLogoutAt: new Date() });
+        res.status(204).end();
     });
 
     // ---------- Gestion utilisateurs (admin) ----------
