@@ -26,6 +26,12 @@ En production, définissez l'URL de l'API avant de charger `api.js` :
 
 Le frontend utilise alors l'API pour les produits, l'authentification propriétaire, les messages et les commandes.
 
+## Configuration CinetPay
+
+Ajoutez dans `.env` les valeurs de votre espace marchand CinetPay : `CINETPAY_APIKEY`, `CINETPAY_SITE_ID`, `API_PUBLIC_URL`, `CINETPAY_RETURN_URL` et `CINETPAY_NOTIFY_URL`. `API_PUBLIC_URL` doit être accessible publiquement par CinetPay, par exemple `https://api.votre-domaine.com`.
+
+Le client est redirigé vers CinetPay après la validation de sa commande. CinetPay appelle ensuite `CINETPAY_NOTIFY_URL`; le backend vérifie la transaction auprès de CinetPay avant de passer la commande à `paid`.
+
 ## Accès propriétaire local
 
 - Identifiant : `proprietaire`

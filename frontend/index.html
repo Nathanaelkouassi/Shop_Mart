@@ -1544,13 +1544,9 @@
             const paymentPhone = document.getElementById('payment-number').value.replace(/\s/g, '');
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             try {
-                await shopmartApi('/orders', { method: 'POST', body: JSON.stringify({ totalFcfa: Math.round(total * 655.957), operator, paymentPhone }) });
-                closePayment();
-                closeCart();
-                showNotification(`Commande enregistrée via ${operator} !`);
-                cart = [];
-                localStorage.removeItem('shopmartCart');
-                updateCartCount();
+                const payment = await shopmartApi('/orders', { method: 'POST', body: JSON.stringify({ totalFcfa: Math.round(total * 655.957), operator, paymentPhone }) });
+                if (!payment.paymentUrl) throw new Error('Lien CinetPay introuvable.');
+                window.location.href = payment.paymentUrl;
             } catch (error) {
                 showNotification(error.message);
             }
@@ -1969,6 +1965,7 @@
             loadProducts();
             updateCarousel();
             startCarousel();
+            if (new URLSearchParams(window.location.search).get('payment')) showNotification('Retour de CinetPay reçu. La confirmation du paiement est en cours.');
         });
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9764f7ca7081b79f',t:'MTc1NjM5NjI2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>

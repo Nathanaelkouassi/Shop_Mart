@@ -9,6 +9,9 @@ const mongoose = require('mongoose');
 
 const port = Number(process.env.PORT || 3000);
 const jwtSecret = process.env.JWT_SECRET || 'development-only-secret';
+const frontendUrl = process.env.FRONTEND_URL || `http://localhost:${port}`;
+const apiPublicUrl = process.env.API_PUBLIC_URL || frontendUrl;
+const cinetpayApiUrl = 'https://api-checkout.cinetpay.com/v2/payment';
 
 // ---------- Schémas ----------
 const ownerSchema = new mongoose.Schema({
@@ -55,6 +58,8 @@ const orderSchema = new mongoose.Schema({
     operator: { type: String, required: true, enum: ['Orange Money', 'MTN Mobile Money', 'Wave', 'Moov Money'] },
     paymentPhone: { type: String, required: true },
     status: { type: String, default: 'pending' },
+    transactionId: { type: String, unique: true, sparse: true },
+    paymentUrl: { type: String, default: null },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
 }, { timestamps: { createdAt: 'createdAt', updatedAt: false } });
 
@@ -111,6 +116,8 @@ const serializeOrder = (doc) => ({
     operator: doc.operator,
     paymentPhone: doc.paymentPhone,
     status: doc.status,
+    transactionId: doc.transactionId,
+    paymentUrl: doc.paymentUrl,
     createdAt: doc.createdAt,
     user: doc.userId ? { firstName: doc.userId.firstName, lastName: doc.userId.lastName, email: doc.userId.email } : null
 });
@@ -273,14 +280,48 @@ async function start() {
     // ---------- Commandes ----------
     app.post('/api/orders', requireUser, async (req, res) => {
         const { totalFcfa, operator, paymentPhone } = req.body || {};
-        if (!['Orange Money', 'MTN Mobile Money', 'Wave', 'Moov Money'].includes(operator) || !Number.isFinite(Number(totalFcfa)) || !/^\d{8,14}$/.test(String(paymentPhone || '').replace(/\s/g, ''))) return res.status(400).json({ error: 'Informations de paiement invalides.' });
-        await Order.create({
+        if (!process.env.CINETPAY_APIKEY || !process.env.CINETPAY_SITE_ID) return res.status(503).json({ error: 'Le paiement CinetPay n’est pas encore configuré.' });
+        if (!['Orange Money', 'MTN Mobile Money', 'Wave', 'Moov Money'].includes(operator) || !Number.isFinite(Number(totalFcfa)) || Number(totalFcfa) <= 0 || !/^\d{8,14}$/.test(String(paymentPhone || '').replace(/\s/g, ''))) return res.status(400).json({ error: 'Informations de paiement invalides.' });
+
+        const transactionId = `SHOPMART-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+        const account = await User.findById(req.user.userId);
+        const order = await Order.create({
             totalFcfa: Math.round(Number(totalFcfa)),
             operator,
             paymentPhone: String(paymentPhone).replace(/\s/g, ''),
+            transactionId,
             userId: req.user.userId
         });
-        res.status(201).json({ status: 'pending', message: 'Commande enregistrée en attente de paiement.' });
+
+        try {
+            const cinetpayResponse = await fetch(cinetpayApiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    apikey: process.env.CINETPAY_APIKEY,
+                    site_id: process.env.CINETPAY_SITE_ID,
+                    transaction_id: transactionId,
+                    amount: order.totalFcfa,
+                    currency: 'XOF',
+                    description: `Commande ShopMart ${transactionId}`,
+                    customer_name: account ? `${account.firstName} ${account.lastName}` : 'Client ShopMart',
+                    customer_email: account?.email || req.user.email,
+                    customer_phone_number: order.paymentPhone,
+                    channels: 'ALL',
+                    return_url: process.env.CINETPAY_RETURN_URL || `${apiPublicUrl}/api/payments/return`,
+                    notify_url: process.env.CINETPAY_NOTIFY_URL || `${apiPublicUrl}/api/payments/notify`,
+                    metadata: transactionId
+                })
+            });
+            const result = await cinetpayResponse.json();
+            if (!cinetpayResponse.ok || result.code !== '201' || !result.data?.payment_url) throw new Error(result.message || 'Initialisation CinetPay impossible.');
+            order.paymentUrl = result.data.payment_url;
+            await order.save();
+            res.status(201).json({ status: 'pending', transactionId, paymentUrl: order.paymentUrl, message: 'Redirection vers CinetPay.' });
+        } catch (error) {
+            await Order.findByIdAndDelete(order._id);
+            res.status(502).json({ error: error.message || 'Le service CinetPay est indisponible.' });
+        }
     });
     app.get('/api/orders', requireOwner, async (req, res) => {
         const orders = await Order.find().populate('userId', 'firstName lastName email').sort({ _id: -1 });
@@ -289,6 +330,27 @@ async function start() {
     app.delete('/api/orders/:id', requireOwner, async (req, res) => {
         await Order.findByIdAndDelete(req.params.id).catch(() => null);
         res.status(204).end();
+    });
+
+    app.post('/api/payments/notify', async (req, res) => {
+        const transactionId = String(req.body?.cpm_trans_id || req.body?.transaction_id || '').trim();
+        if (!transactionId || !process.env.CINETPAY_APIKEY || !process.env.CINETPAY_SITE_ID) return res.status(400).send('Invalid notification');
+        try {
+            const verificationResponse = await fetch(cinetpayApiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ apikey: process.env.CINETPAY_APIKEY, site_id: process.env.CINETPAY_SITE_ID, transaction_id: transactionId })
+            });
+            const verification = await verificationResponse.json();
+            const status = verification.data?.status;
+            if (verificationResponse.ok && verification.code === '00' && status) await Order.findOneAndUpdate({ transactionId }, { status: status === 'ACCEPTED' ? 'paid' : status.toLowerCase() });
+            res.status(200).send('OK');
+        } catch { res.status(500).send('Notification processing failed'); }
+    });
+
+    app.get('/api/payments/return', (req, res) => {
+        const transactionId = encodeURIComponent(String(req.query.transaction_id || req.query.cpm_trans_id || ''));
+        res.redirect(`${frontendUrl}/index.html?payment=${transactionId}`);
     });
 
     // ---------- Fallback frontend ----------
