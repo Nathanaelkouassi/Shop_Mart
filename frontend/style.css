@@ -10,6 +10,23 @@ html {
     scroll-behavior: smooth;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 320px;
+    overflow-x: hidden;
+}
+
+img, video {
+    max-width: 100%;
+}
+
+button, a, input, select, textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
 body {
     color: var(--shopmart-text);
 }
@@ -55,5 +72,108 @@ nav {
 @media (max-width: 767px) {
     nav .hidden {
         display: none;
+    }
+
+    nav .flex.items-center.space-x-4 {
+        gap: .5rem;
+    }
+
+    nav input[type="text"],
+    nav input[type="search"] {
+        width: min(43vw, 220px);
+        min-width: 0;
+        font-size: .82rem;
+    }
+
+    nav .text-2xl {
+        font-size: 1.15rem;
+    }
+
+    main {
+        max-width: 100%;
+    }
+
+    h1.text-4xl,
+    h1.text-5xl,
+    h2.text-5xl,
+    h3.text-4xl {
+        font-size: 2rem;
+        line-height: 1.1;
+    }
+
+    h2.text-3xl,
+    h3.text-3xl {
+        font-size: 1.65rem;
+        line-height: 1.15;
+    }
+
+    #hero {
+        height: 25rem;
+    }
+
+    #hero h2 {
+        padding-inline: 1rem;
+        font-size: 2rem;
+    }
+
+    #hero p {
+        padding-inline: 1.25rem;
+        font-size: 1rem;
+    }
+
+    #hero button {
+        padding: .7rem 1.1rem;
+        font-size: .9rem;
+    }
+
+    [id$="modal"] > div,
+    [id$="modal"] > form {
+        max-height: calc(100dvh - 2rem);
+        overflow-y: auto;
+    }
+
+    table {
+        font-size: .8rem;
+    }
+
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    footer .grid {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    nav .max-w-7xl,
+    nav > div {
+        padding-inline: .75rem;
+    }
+
+    nav input[type="text"],
+    nav input[type="search"] {
+        width: 38vw;
+    }
+
+    #hero {
+        height: 22rem;
+    }
+
+    .grid.grid-cols-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .grid.grid-cols-1.sm\:grid-cols-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .px-8 {
+        padding-inline: 1rem;
+    }
+
+    .product-card h4,
+    .product-card h2 {
+        white-space: normal;
     }
 }
