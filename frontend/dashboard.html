@@ -6,11 +6,60 @@
     <title>Dashboard | ShopMart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <script>
   window.SHOPMART_API_URL = 'https://shop-mart-uj4k.onrender.com/api';
 </script>
 <script src="api.js"></script>
+<style>
+    :root {
+        --dashboard-ink: #17313a;
+        --dashboard-muted: #71838a;
+        --dashboard-line: #dce7e9;
+        --dashboard-surface: #ffffff;
+        --dashboard-canvas: #f1f6f5;
+        --dashboard-teal: #087f76;
+        --dashboard-coral: #ef7d62;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--dashboard-canvas); color: var(--dashboard-ink); }
+    h1, h2, h3, .font-bold { font-family: 'Space Grotesk', sans-serif; }
+    #owner-login { background: radial-gradient(circle at 15% 10%, #276b70 0, transparent 34%), #102d36; }
+    #owner-login form { border: 1px solid rgba(255,255,255,.7); border-radius: 24px; box-shadow: 0 24px 80px rgba(5, 31, 37, .35); }
+    #owner-login .btn-primary, #dashboard-app .btn-primary { background: var(--dashboard-teal); }
+    #owner-login .btn-primary:hover, #dashboard-app .btn-primary:hover { background: #066960; }
+    #dashboard-app { background: var(--dashboard-canvas); }
+    #dashboard-app > aside { background: var(--dashboard-ink) !important; }
+    #dashboard-app aside a:first-child { background: var(--dashboard-teal) !important; box-shadow: 0 10px 22px rgba(8, 127, 118, .24); }
+    #dashboard-app aside a, #dashboard-app aside button { border-radius: 12px; }
+    #dashboard-app aside a:hover, #dashboard-app aside button:hover { background: rgba(255,255,255,.09); }
+    #dashboard-app main { padding: 28px; }
+    #dashboard-app main > header { padding: 24px 28px; margin-bottom: 24px; background: var(--dashboard-surface); border: 1px solid var(--dashboard-line); border-radius: 20px; box-shadow: 0 8px 22px rgba(23, 49, 58, .05); }
+    #dashboard-app main > header h1 { color: var(--dashboard-ink); letter-spacing: -.03em; }
+    #dashboard-app main > header p:last-child { color: var(--dashboard-muted); }
+    #dashboard-app main > section article { border: 1px solid var(--dashboard-line); border-radius: 18px; box-shadow: 0 8px 22px rgba(23, 49, 58, .05); }
+    #dashboard-app main > section article:hover { box-shadow: 0 14px 30px rgba(23, 49, 58, .09); transform: translateY(-2px); transition: transform .2s ease, box-shadow .2s ease; }
+    #dashboard-app main > section:first-of-type article:nth-child(1) { border-left-color: #3b82b6; }
+    #dashboard-app main > section:first-of-type article:nth-child(2) { border-left-color: var(--dashboard-teal); }
+    #dashboard-app main > section:first-of-type article:nth-child(3) { border-left-color: var(--dashboard-coral); }
+    #dashboard-app main > section:first-of-type article:nth-child(4) { border-left-color: #e3ad45; }
+    #dashboard-app main > section:first-of-type article > div > div p:first-child { color: var(--dashboard-muted); font-weight: 600; }
+    #dashboard-app main > section:first-of-type article > div > div p:nth-child(2) { color: var(--dashboard-ink); }
+    #dashboard-app main > section:not(:first-of-type) > article h2,
+    #dashboard-app main > section:not(:first-of-type) > div h2 { color: var(--dashboard-ink); }
+    #dashboard-app table thead { background: #f5f9f8; }
+    #dashboard-app table th { color: var(--dashboard-muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+    #dashboard-app table td { border-color: var(--dashboard-line); }
+    #dashboard-app input, #dashboard-app select, #dashboard-app textarea { border-color: var(--dashboard-line); }
+    #dashboard-app input:focus, #dashboard-app select:focus, #dashboard-app textarea:focus { border-color: var(--dashboard-teal); box-shadow: 0 0 0 3px rgba(8, 127, 118, .12); }
+    #messages-menu { border-color: var(--dashboard-line); }
+    @media (max-width: 767px) {
+        #dashboard-app main { padding: 16px; }
+        #dashboard-app main > header { padding: 20px; }
+        #dashboard-app main > header h1 { font-size: 1.8rem; }
+    }
+</style>
 </head>
 <body class="bg-gray-100 text-gray-800">
     <section id="owner-login" class="flex min-h-screen items-center justify-center bg-gray-900 px-4">
