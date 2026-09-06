@@ -59,6 +59,52 @@
         #dashboard-app main > header { padding: 20px; }
         #dashboard-app main > header h1 { font-size: 1.8rem; }
     }
+
+    /* Dark operations workspace inspired by the supplied admin reference. */
+    body { background: #101211; color: #e6ebe8; }
+    #dashboard-app { background: #101211; }
+    #dashboard-app > aside { background: #0d0f0e !important; border-right: 1px solid #292d2b; }
+    #dashboard-app aside a:first-child { background: #292d2b !important; color: #fff; box-shadow: none; }
+    #dashboard-app aside a, #dashboard-app aside button { color: #9da7a2; }
+    #dashboard-app aside a:hover, #dashboard-app aside button:hover { background: #202522; color: #fff; }
+    #dashboard-app aside a:first-child i { color: #9be15d; }
+    #dashboard-app main { background: #101211; }
+    #dashboard-app main > header { background: transparent; border: 0; border-bottom: 1px solid #292d2b; border-radius: 0; box-shadow: none; padding: 0 0 22px; }
+    #dashboard-app main > header h1, #dashboard-app main > section h2 { color: #f3f6f4; }
+    #dashboard-app main > header p, #dashboard-app main > section p { color: #8e9993; }
+    #dashboard-app main > header .text-purple-600 { color: #9be15d !important; }
+    #dashboard-app main > section article,
+    #dashboard-app main > section > article,
+    #dashboard-app main > section > div { background: #171a18 !important; border: 1px solid #292d2b; border-radius: 10px; box-shadow: none; }
+    #dashboard-app main > section article:hover { box-shadow: 0 10px 28px rgba(0,0,0,.22); transform: none; }
+    #dashboard-app main > section:first-of-type article { border-left-width: 3px; }
+    #dashboard-app main > section:first-of-type article > div > div p:nth-child(2) { color: #f3f6f4; }
+    #dashboard-app main > section:first-of-type article span { background: #242a26 !important; color: #9be15d !important; }
+    #dashboard-app .bg-gray-50, #dashboard-app .hover\:bg-purple-50:hover { background: #202522 !important; }
+    #dashboard-app .text-purple-600, #dashboard-app .text-purple-700 { color: #9be15d !important; }
+    #dashboard-app .text-green-600 { color: #9be15d !important; }
+    #dashboard-app .text-red-600 { color: #ff8778 !important; }
+    #dashboard-app .border-gray-300 { border-color: #39423d !important; }
+    #dashboard-app table thead { background: #202522; }
+    #dashboard-app table th { color: #8e9993; }
+    #dashboard-app table td { color: #d9e0dc; border-color: #292d2b; }
+    #dashboard-app table tbody tr:hover { background: #202522; }
+    #dashboard-app .bg-green-50 { background: rgba(155,225,93,.14) !important; }
+    #dashboard-app .bg-orange-50 { background: rgba(240,178,74,.14) !important; }
+    #dashboard-app .bg-red-50 { background: rgba(255,135,120,.14) !important; }
+    #dashboard-app #orders-section { border-color: #3b4540; }
+    #dashboard-app #orders-section h2::before { content: '●'; color: #9be15d; font-size: .7em; margin-right: .55rem; vertical-align: .12em; }
+    #dashboard-app #messages-menu { background: #171a18; border-color: #39423d; }
+    #dashboard-app #messages-menu a { color: #d9e0dc; }
+    #dashboard-app #product-modal form { background: #171a18; color: #e6ebe8; }
+    #dashboard-app #product-modal input, #dashboard-app #product-modal select, #dashboard-app #product-modal textarea { background: #202522; color: #f3f6f4; border-color: #39423d; }
+    #dashboard-app .btn-primary { background: #9be15d; color: #0d0f0e !important; }
+    #dashboard-app .btn-primary:hover { background: #b4ed7e; }
+    @media (max-width: 767px) {
+        #dashboard-app main { padding: 14px; }
+        #dashboard-app main > header { padding-bottom: 18px; }
+        #dashboard-app > aside { border-right: 0; border-bottom: 1px solid #292d2b; }
+    }
 </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
